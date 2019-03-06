@@ -147,8 +147,9 @@ module TwitterJekyll
     attr_writer :cache # for testing
 
     def initialize(_name, params, _tokens)
+
+      @markup = params
       super
-      @api_request = parse_params(params)
     end
 
     # Class that implements caching strategy
@@ -160,6 +161,9 @@ module TwitterJekyll
     # Return html string for Jekyll engine
     # @api public
     def render(context)
+      content = Liquid::Template.parse(@markup).render context
+      @api_request = parse_params(content)
+
       api_secrets_deprecation_warning(context) # TODO: remove after deprecation cycle
       response = cached_response || live_response
       html_output_for(response)
